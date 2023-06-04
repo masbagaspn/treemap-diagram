@@ -1,0 +1,23 @@
+[
+  {
+    "id": "video-games",
+    "title": "Video Game Sales",
+    "description": "Top 100 Most Sold Video Games Grouped by Platform",
+    "link": "Video Game",
+    "url": "https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/video-game-sales-data.json"
+  },
+  {
+    "id": "movies",
+    "title": "Movie Sales",
+    "description": "Top 100 Highest Grossing Movies Grouped by Genre",
+    "link": "Movies",
+    "url": "https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/movie-data.json"
+  },
+  {
+    "id": 3,
+    "title": "Kickstarter Pledges",
+    "description": "Top 100 Most Pledged Kickstarter Campaigns Grouped by Category",
+    "link": "Kickstarter",
+    "url": "https://cdn.freecodecamp.org/testable-projects-fcc/data/tree_map/kickstarter-funding-data.json"
+  }
+]

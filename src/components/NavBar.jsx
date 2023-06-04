@@ -2,7 +2,6 @@ import clsx from "clsx";
 import PropTypes from "prop-types";
 
 function NavBar({ data, state }) {
-  console.log(state.active);
   return (
     <nav>
       <ul className="w-fit flex items-center gap-6 text-xs bg-white rounded-lg drop-shadow-md px-5 py-3">

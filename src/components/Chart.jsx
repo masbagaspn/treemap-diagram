@@ -4,10 +4,10 @@ import { useEffect, useRef } from "react";
 
 function Chart({ data }) {
   const chart = useRef();
-  console.log(data);
+
   useEffect(() => {
     const width = window.innerWidth * 0.9;
-    const height = window.innerHeight * 0.7;
+    const height = window.innerHeight * 0.65;
 
     const colors = [
       "#1f77b4",
@@ -86,8 +86,13 @@ function Chart({ data }) {
       );
 
     const category = data.data.children.map((item) => item.name);
+    const thirdCategoryLength = Math.ceil(category.length / 3);
 
-    const legendX = d3.scaleBand().domain(category).range([0, width]);
+    const indexToScale = category
+      .slice(0, thirdCategoryLength)
+      .map((item, index) => index);
+
+    const legendX = d3.scaleBand().domain(indexToScale).range([0, width]);
 
     const legend = svg
       .append("g")
@@ -101,9 +106,16 @@ function Chart({ data }) {
         (enter) => enter.append("rect"),
         (exit) => exit.remove()
       )
+      .classed("legend-item", true)
       .attr("width", 16)
       .attr("height", 16)
-      .attr("x", (d) => legendX(d))
+      .attr("x", (d, i) => {
+        return legendX(i % thirdCategoryLength);
+      })
+      .attr("y", (d, i) => {
+        if (i >= thirdCategoryLength * 2) return 16 * 4;
+        if (i >= thirdCategoryLength * 1) return 16 * 2;
+      })
       .attr("fill", (d) => colorScheme(d));
 
     legend
@@ -114,9 +126,19 @@ function Chart({ data }) {
         (exit) => exit.remove()
       )
       .attr("id", (d) => `text-${d}`)
-      .attr("x", (d) => legendX(d) + 20)
-      .attr("y", 16 * 0.8)
-      .attr("font-size", "0.8rem")
+      .attr("x", (d, i) => {
+        const param = i % thirdCategoryLength;
+        return legendX(param) + 20;
+      })
+      .attr("y", (d, i) => {
+        const rectPos = 16;
+        const midOfRectPos = 16 * 0.75;
+
+        if (i >= thirdCategoryLength * 2) return rectPos * 4 + midOfRectPos;
+        if (i >= thirdCategoryLength * 1) return rectPos * 2 + midOfRectPos;
+        return midOfRectPos;
+      })
+      .attr("font-size", "0.75rem")
       .text((d) => d);
   }, [data]);
 

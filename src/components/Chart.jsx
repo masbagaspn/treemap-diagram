@@ -47,36 +47,65 @@ function Chart({ data }) {
       .size([width, height - window.innerHeight * 0.1]);
     treemap(hierarchy);
 
+    const tooltip = d3.select("#tooltip").style("visibility", "hidden");
     const svg = d3.select(chart.current);
 
-    const block = svg
+    const map = svg.append("g").attr("id", "map");
+
+    const block = map
       .selectAll("g")
       .data(hierarchy.leaves())
-      .join(
-        (enter) => enter.append("g"),
-        (update) =>
-          update.attr("transform", (d) => `translate(${d.x0}, ${d.y0})`),
-        (exit) => exit.remove()
-      )
-      .attr("x", (d) => d.x0)
-      .attr("y", (y) => y.y0)
-      .attr("transfrom", (d) => `translate(${d.x0}, ${d.y0})`);
+      .enter()
+      .append("g")
+      .attr("transform", (d) => `translate(${d.x0}, ${d.y0})`);
 
     block
       .append("rect")
       .classed("tile", true)
+      .attr("id", (d, i) => `tile-${i}`)
       .attr("data-name", (d) => d.data.name)
       .attr("data-category", (d) => d.data.category)
       .attr("data-value", (d) => d.data.value)
       .attr("width", (d) => d.x1 - d.x0 - 1)
       .attr("height", (d) => d.y1 - d.y0 - 1)
-      .attr("fill", (d) => colorScheme(d.data.category));
+      .attr("fill", (d) => colorScheme(d.data.category))
+      .on("mousemove", (e, d) => {
+        const element = document.getElementById(e.target.id);
+        element.style.opacity = 0.75;
+
+        tooltip.transition().duration(200).style("visibility", "visible");
+        tooltip
+          .html(
+            `
+            <span class='tooltip-title'>${d.data.name}</span>
+            <span><i>${d.data.category}</i></span>
+            <br>
+            <span class='tooltip-value'>
+                <b>
+                    ${d.data.value
+                      .toString()
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}
+                </b>
+            </span>
+            `
+          )
+          .attr("data-value", d.data.value)
+          .style("left", () => `${e.pageX - 120}px`)
+          .style("top", `${e.pageY - 100}px`);
+      })
+      .on("mouseout", (e) => {
+        const element = document.getElementById(e.target.id);
+        element.style.opacity = 1;
+
+        tooltip.style("visibility", "hidden");
+      });
 
     block
       .append("text")
       .attr("x", 5)
       .attr("y", 12)
       .attr("font-size", "0.4rem")
+      .style("pointer-events", "none")
       .text(
         (d) =>
           `${d.data.name
@@ -143,14 +172,21 @@ function Chart({ data }) {
   }, [data]);
 
   return (
-    <div id="chart-container" className="flex flex-col gap-2">
+    <div
+      id="chart-container"
+      className="flex flex-col p-4 shadow-md rounded-lg"
+    >
       <h1 id="title" className="text-2xl font-semibold">
         {data.title}
       </h1>
       <p id="description" className="text-sm font-light">
         {data.description}
       </p>
-      <svg ref={chart} className="w-[90vw] h-[70vh]"></svg>
+      <div
+        id="tooltip"
+        className="absolute left-1/2 bg-white/90 w-auto h-auto px-6 py-3 rounded-sm text-xs pointer-events-none flex flex-col"
+      ></div>
+      <svg ref={chart} className="w-[90vw] h-[70vh] mt-4"></svg>
     </div>
   );
 }

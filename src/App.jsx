@@ -24,7 +24,7 @@ function App() {
   }, [section]);
 
   return (
-    <main className="w-screen max-w-screen h-screen max-h-screen p-8 font-jakarta flex flex-col justify-between items-center">
+    <main className="w-screen max-w-screen h-screen max-h-screen py-4 font-jakarta flex flex-col justify-between items-center">
       <NavBar data={dataJSON} state={{ section, setSection }} />
       {isLoading === true ? null : <Chart data={dataset} />}
     </main>
